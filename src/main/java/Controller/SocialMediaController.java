@@ -1,5 +1,11 @@
 package Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import Model.Account;
+import Service.AccountService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -9,6 +15,13 @@ import io.javalin.http.Context;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
+
+    AccountService accountService;
+
+    public SocialMediaController(){
+        accountService = new AccountService();
+    }
+
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
@@ -16,18 +29,87 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.get("example-endpoint", this::exampleHandler);
-
+        app.post("/register", this::userRegistrationHandler);
+        app.post("/login", this::loginHandler);
+        app.post("/messages", this::createNewMessageHandler);
+        app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getMsgByIDHandler);
+        app.delete("/messages/{message_id}", this::deleteMessageByIDHandler);
+        app.patch("/messages/{message_id}", this::updateMessageByIDHandler);
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByUserHandler);
         return app;
     }
 
     /**
-     * This is an example handler for an example endpoint.
+     * TODO
      * @param context The Javalin Context object manages information about both the HTTP request and response.
+     * @throws JsonProcessingException 
+     * @throws JsonMappingException 
      */
-    private void exampleHandler(Context context) {
-        context.json("sample text");
+    private void userRegistrationHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
+        Account newAccount = accountService.addAccount(account);
+        if (newAccount == null) {
+            ctx.status(400);
+        } else {
+            ctx.json(mapper.writeValueAsString(newAccount)).status(200);
+        }
     }
 
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void loginHandler(Context ctx) {
+        ctx.json("sample text");
+    }
 
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void createNewMessageHandler(Context ctx) {
+        ctx.json("sample text");
+    }
+
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void getAllMessagesHandler(Context ctx) {
+        ctx.json("sample text");
+    }
+
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void getMsgByIDHandler(Context ctx) {
+        ctx.json("sample text");
+    }
+
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void deleteMessageByIDHandler(Context ctx) {
+        ctx.json("sample text");
+    }
+
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void updateMessageByIDHandler(Context ctx) {
+        ctx.json("sample text");
+    }
+
+    /**
+     * TODO
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void getAllMessagesByUserHandler(Context ctx) {
+        ctx.json("sample text");
+    }
 }

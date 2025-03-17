@@ -18,4 +18,8 @@ public class AccountService {
 
         return socialMediaDAO.addAccount(account);
     }
+
+    public Account verifyAccount(Account account){
+        return socialMediaDAO.verifyAccount(account);
+    }
 }

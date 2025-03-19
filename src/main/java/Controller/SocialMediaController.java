@@ -143,16 +143,31 @@ public class SocialMediaController {
     /**
      * TODO
      * @param context The Javalin Context object manages information about both the HTTP request and response.
+     * @throws JsonProcessingException 
      */
-    private void updateMessageByIDHandler(Context ctx) {
-        ctx.json("sample text");
+    private void updateMessageByIDHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        String new_body = message.getMessage_text();
+        Message updatedMessage = messageService.updateMessageByID(message_id, new_body);
+        if (updatedMessage == null) {
+            ctx.status(400);
+        } else {
+            ctx.json(mapper.writeValueAsString(updatedMessage));
+        }
     }
 
     /**
      * TODO
      * @param context The Javalin Context object manages information about both the HTTP request and response.
+     * @throws JsonProcessingException 
      */
-    private void getAllMessagesByUserHandler(Context ctx) {
-        ctx.json("sample text");
+    private void getAllMessagesByUserHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+        List<Message> messages = messageService.getAllMessagesByUser(account_id);
+        ctx.json(mapper.writeValueAsString(messages));
     }
 }

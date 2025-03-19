@@ -74,6 +74,25 @@ public class SocialMediaDAO {
         return messages;
     }
 
+    public List<Message> getAllMessagesByUser(int account_id){
+        Connection connection = ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM message WHERE posted_by=?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, account_id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                messages.add(new Message(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getLong(4)));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return messages;
+    }
+
     public Message getMessageByID(int message_id){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -111,6 +130,24 @@ public class SocialMediaDAO {
         return null;
     }
 
+    public Message updateMessageByID(int message_id, String new_body){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+
+            String sql = "UPDATE message SET message_text = ? WHERE message_id=?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, new_body);
+            preparedStatement.setInt(2, message_id);
+            preparedStatement.execute();
+            Message message = getMessageByID(message_id);
+            return message;
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     public boolean usernameExists(String username){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -118,6 +155,21 @@ public class SocialMediaDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, username);
+
+            if (preparedStatement.executeQuery().next()) return true;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean messageIDExists(int message_id){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "SELECT * FROM message WHERE message_id = ?;" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, message_id);
 
             if (preparedStatement.executeQuery().next()) return true;
         } catch(SQLException e) {

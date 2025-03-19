@@ -14,9 +14,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 /**
- * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
- * found in readme.md as well as the test cases. You should
- * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
+ * This class handles the HTTP requests made to localhost:8080. Handlers are supplied for each supported request.
  */
 public class SocialMediaController {
 
@@ -29,8 +27,7 @@ public class SocialMediaController {
     }
 
     /**
-     * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
-     * suite must receive a Javalin object from this method.
+     * Establishes the valid requests and their respective handlers.
      * @return a Javalin app object which defines the behavior of the Javalin controller.
      */
     public Javalin startAPI() {
@@ -47,7 +44,8 @@ public class SocialMediaController {
     }
 
     /**
-     * TODO
+     * Handles user registration requests by communicating with an AccountService object.
+     * Response contains the new Account object if successful (status 200), status 400 otherwise.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      * @throws JsonMappingException 
@@ -59,12 +57,13 @@ public class SocialMediaController {
         if (newAccount == null) {
             ctx.status(400);
         } else {
-            ctx.json(mapper.writeValueAsString(newAccount)).status(200);
+            ctx.json(mapper.writeValueAsString(newAccount));
         }
     }
 
     /**
-     * TODO
+     * Handles login requests by communicating with an AccountService object.
+     * Response contains the new Account object if successful (status 200), status 401 otherwise.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      * @throws JsonMappingException 
@@ -76,12 +75,13 @@ public class SocialMediaController {
         if (newAccount == null) {
             ctx.status(401);
         } else {
-            ctx.json(mapper.writeValueAsString(newAccount)).status(200);
+            ctx.json(mapper.writeValueAsString(newAccount));
         }
     }
 
     /**
-     * TODO
+     * Handles message creation requests by communicating with a MessageService object.
+     * Response contains the new Message object if successful (status 200), status 400 otherwise.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      * @throws JsonMappingException 
@@ -93,12 +93,13 @@ public class SocialMediaController {
         if (newMessage == null) {
             ctx.status(400);
         } else {
-            ctx.json(mapper.writeValueAsString(newMessage)).status(200);
+            ctx.json(mapper.writeValueAsString(newMessage));
         }
     }
 
     /**
-     * TODO
+     * Handles requests to fetch all messages by communicating with a MessageService object.
+     * Response contains a List of Message objects. Status is always 200.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      */
@@ -109,7 +110,9 @@ public class SocialMediaController {
     }
 
     /**
-     * TODO
+     * Handles fetching of a specific message by message ID by communicating with a MessageService object.
+     * message_id is obtained through the path parameter.
+     * Response contains the respective Message object if it exists, an empty body otherwise. Status is always 200.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      */
@@ -125,7 +128,9 @@ public class SocialMediaController {
     }
 
     /**
-     * TODO
+     * Handles message deletion requests by communicating with a MessageService object.
+     * message_id is obtained through the path parameter.
+     * Response contains the Message object that was deleted if it exists, an empty body otherwise. Status is always 200.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      */
@@ -141,7 +146,9 @@ public class SocialMediaController {
     }
 
     /**
-     * TODO
+     * Handles message update requests by communicating with a MessageService object.
+     * message_id is obtained through the path parameter.
+     * Response contains the Message object that was updated if it exists (status 200), status 400 otherwise.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      */
@@ -160,7 +167,9 @@ public class SocialMediaController {
     }
 
     /**
-     * TODO
+     * Handles requests to fetch all messages by account_id by communicating with a MessageService object.
+     * account_id is obtained through the path parameter.
+     * Response contains the List of Message objects by user with account_id. Status is always 200.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      * @throws JsonProcessingException 
      */

@@ -14,6 +14,11 @@ import Util.ConnectionUtil;
 
 public class SocialMediaDAO {
     
+    /**
+     * Attempts to connect to the database and add account as a new record to the account table.
+     * @param account The Account object to persist to the database.
+     * @return The Account object after persisting it to the database. Returns null on failure.
+     */
     public Account addAccount(Account account){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -35,6 +40,76 @@ public class SocialMediaDAO {
         return null;
     }
 
+    /**
+     * Attempts to connect to the database and verify that account exists.
+     * @param account The Account object to verify
+     * @return The Account object after verifying it from the database. Returns null on failure.
+     */
+    public Account verifyAccount(Account account){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "SELECT * FROM account WHERE username=? AND password=?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(2, account.getPassword());
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if(rs.next()){
+                int account_id = rs.getInt(1);
+                return new Account(account_id, account.getUsername(), account.getPassword());
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Attempts to connect to the database and check if username is present in the account table.
+     * @param username The username to search for in the database.
+     * @return true if username is currently being used by an Account, false otherwise.
+     */
+    public boolean usernameExists(String username){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "SELECT * FROM account WHERE username = ?;" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, username);
+
+            if (preparedStatement.executeQuery().next()) return true;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Attempts to connect to the database and check if account_id is present in the account table.
+     * @param account_id The account_id to search for in the database.
+     * @return true if account_id is currently being used by an Account, false otherwise.
+     */
+    public boolean accountIDExists(int account_id){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "SELECT * FROM account WHERE account_id = ?;" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, account_id);
+
+            if (preparedStatement.executeQuery().next()) return true;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Attempts to connect to the database and add message as a new record to the message table.
+     * @param message The Message object to persist to the database.
+     * @return The Message object after persisting it to the database. Returns null on failure.
+     */
     public Message addMessage(Message message){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -57,6 +132,33 @@ public class SocialMediaDAO {
         return null;
     }
 
+    /**
+     * Attempts to connect to the database and fetch the message specified by message_id in the message table.
+     * @param message_id The message_id to search for in the database.
+     * @return The Message object related to message_id, if it exists. Returns null otherwise.
+     */
+    public Message getMessageByID(int message_id){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "SELECT * FROM message WHERE message_id=?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, message_id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if(rs.next()){
+                return new Message(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getLong(4));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Attempts to connect to the database and fetch all messages in the message table.
+     * @return The List of Message objects representing all rows in the message table.
+     */
     public List<Message> getAllMessages(){
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
@@ -74,6 +176,11 @@ public class SocialMediaDAO {
         return messages;
     }
 
+    /**
+     * Attempts to connect to the database and fetch all messages by account_id in the message table.
+     * @param account_id The account_id which specifies the author of the messages to be fetched.
+     * @return The List of Message objects written by account_id in the message table.
+     */
     public List<Message> getAllMessagesByUser(int account_id){
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
@@ -93,24 +200,11 @@ public class SocialMediaDAO {
         return messages;
     }
 
-    public Message getMessageByID(int message_id){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            String sql = "SELECT * FROM message WHERE message_id=?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, message_id);
-
-            ResultSet rs = preparedStatement.executeQuery();
-            if(rs.next()){
-                return new Message(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getLong(4));
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
+    /**
+     * Attempts to connect to the database and delete the message specified by message_id in the message table, if it exists.
+     * @param message_id The message_id to search for in the database.
+     * @return The Message object that was deleted, if it exists. Returns null otherwise.
+     */
     public Message deleteMessageByID(int message_id){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -130,6 +224,13 @@ public class SocialMediaDAO {
         return null;
     }
 
+    /**
+     * Attempts to connect to the database and update the message specified by message_id in the message table, if it exists.
+     * It will overwrite message_text with new_body.
+     * @param message_id The message_id of the Message to be updated.
+     * @param new_body The new message_text to replace the existing text.
+     * @return The Message object that was updated, if it exists. Returns null otherwise.
+     */
     public Message updateMessageByID(int message_id, String new_body){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -148,21 +249,11 @@ public class SocialMediaDAO {
         return null;
     }
 
-    public boolean usernameExists(String username){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            String sql = "SELECT * FROM account WHERE username = ?;" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setString(1, username);
-
-            if (preparedStatement.executeQuery().next()) return true;
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return false;
-    }
-
+    /**
+     * Attempts to connect to the database and check if message_id is present in the message table.
+     * @param message_id The message_id to search for in the database.
+     * @return true if message_id is currently being used by an Account, false otherwise.
+     */
     public boolean messageIDExists(int message_id){
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -177,43 +268,4 @@ public class SocialMediaDAO {
         }
         return false;
     }
-
-    public boolean isValidUserID(int account_id){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            String sql = "SELECT * FROM account WHERE account_id = ?;" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, account_id);
-
-            if (preparedStatement.executeQuery().next()) return true;
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return false;
-    }
-
-    public Account verifyAccount(Account account){
-        Connection connection = ConnectionUtil.getConnection();
-        try {
-            String sql = "SELECT * FROM account WHERE username=? AND password=?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setString(1, account.getUsername());
-            preparedStatement.setString(2, account.getPassword());
-
-            ResultSet rs = preparedStatement.executeQuery();
-            if(rs.next()){
-                int account_id = rs.getInt(1);
-                return new Account(account_id, account.getUsername(), account.getPassword());
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    
-
-
 }

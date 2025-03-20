@@ -2,14 +2,14 @@ package Service;
 
 import Model.Account;
 
-import DAO.SocialMediaDAO;
+import DAO.AccountDAO;
 
 public class AccountService {
 
-    SocialMediaDAO socialMediaDAO;
+    AccountDAO accountDAO;
 
     public AccountService(){
-        socialMediaDAO = new SocialMediaDAO();
+        accountDAO = new AccountDAO();
     }
 
     /**
@@ -21,9 +21,9 @@ public class AccountService {
     public Account addAccount(Account account){
         if (account.getUsername().length() == 0) return null;
         if (account.getPassword().length() < 4) return null;
-        if (socialMediaDAO.usernameExists(account.getUsername())) return null;
+        if (accountDAO.usernameExists(account.getUsername())) return null;
 
-        return socialMediaDAO.addAccount(account);
+        return accountDAO.addAccount(account);
     }
 
     /**
@@ -32,6 +32,6 @@ public class AccountService {
      * @return The verified Account object. Returns null on failure.
      */
     public Account verifyAccount(Account account){
-        return socialMediaDAO.verifyAccount(account);
+        return accountDAO.verifyAccount(account);
     }
 }

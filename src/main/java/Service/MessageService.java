@@ -2,15 +2,19 @@ package Service;
 
 import java.util.List;
 
-import DAO.SocialMediaDAO;
+import DAO.AccountDAO;
+import DAO.MessageDAO;
 import Model.Message;
 
 public class MessageService {
 
-    SocialMediaDAO socialMediaDAO;
+    MessageDAO messageDAO;
+    //contains this one because message has a foreign key linked to account.
+    AccountDAO accountDAO;
 
     public MessageService(){
-        socialMediaDAO = new SocialMediaDAO();
+        messageDAO = new MessageDAO();
+        accountDAO = new AccountDAO();
     }
 
     /**
@@ -20,9 +24,9 @@ public class MessageService {
      */
     public Message createMessage(Message message){
         if (!isValidMessageBody(message.getMessage_text())) return null;
-        if (!socialMediaDAO.accountIDExists(message.getPosted_by())) return null;
+        if (!accountDAO.accountIDExists(message.getPosted_by())) return null;
 
-        return socialMediaDAO.addMessage(message);
+        return messageDAO.addMessage(message);
     }
 
     /**
@@ -33,9 +37,9 @@ public class MessageService {
      */
     public Message updateMessageByID(int message_id, String new_body){
         if (!isValidMessageBody(new_body)) return null;
-        if (!socialMediaDAO.messageIDExists(message_id)) return null;
+        if (!messageDAO.messageIDExists(message_id)) return null;
 
-        return socialMediaDAO.updateMessageByID(message_id, new_body);
+        return messageDAO.updateMessageByID(message_id, new_body);
     }
 
     /**
@@ -43,7 +47,7 @@ public class MessageService {
      * @return The List of all Message objects obtained by the DAO.
      */
     public List<Message> getAllMessages(){
-        return socialMediaDAO.getAllMessages();
+        return messageDAO.getAllMessages();
     }
 
     /**
@@ -52,7 +56,7 @@ public class MessageService {
      * @return The List of all Message objects, written by the user with account_id, obtained by the DAO.
      */
     public List<Message> getAllMessagesByUser(int account_id){
-        return socialMediaDAO.getAllMessagesByUser(account_id);
+        return messageDAO.getAllMessagesByUser(account_id);
     }
 
     /**
@@ -61,7 +65,7 @@ public class MessageService {
      * @return The Message object requested from the database. Returns null on failure.
      */
     public Message getMessageByID(int message_id){
-        return socialMediaDAO.getMessageByID(message_id);
+        return messageDAO.getMessageByID(message_id);
     }
 
     /**
@@ -70,7 +74,7 @@ public class MessageService {
      * @return The Message object that was deleted.
      */
     public Message deleteMessageByID(int message_id){
-        return socialMediaDAO.deleteMessageByID(message_id);
+        return messageDAO.deleteMessageByID(message_id);
     }
 
     /**
